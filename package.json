@@ -1,0 +1,20 @@
+{
+  "name": "wugislocalapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^40.6.1"
+  },
+  "dependencies": {
+    "electron-tabs": "^1.0.4",
+    "node-machine-id": "^1.1.12"
+  }
+}

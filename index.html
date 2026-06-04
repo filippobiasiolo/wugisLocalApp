@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wugis Electron Shell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #f3f4f6;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+          'Segoe UI', sans-serif;
+      }
+
+      .window {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
+
+      .tab-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        background: #e5e7eb;
+        border-bottom: 1px solid #d1d5db;
+        user-select: none;
+      }
+
+      .tab-bar-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #4b5563;
+        padding: 4px 8px;
+      }
+
+      .tabs {
+        display: flex;
+        align-items: stretch;
+        gap: 4px;
+        flex: 1;
+        overflow-x: auto;
+        padding: 0 4px;
+      }
+
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        max-width: 200px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        background: transparent;
+        font-size: 12px;
+        color: #4b5563;
+        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .tab.active {
+        background: #ffffff;
+        border-color: #d1d5db;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+      }
+
+      .tab-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tab-new {
+        border-radius: 999px;
+        width: 22px;
+        height: 22px;
+        border: 1px solid #9ca3af;
+        background: #e5e7eb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #4b5563;
+        cursor: pointer;
+      }
+
+      .content {
+        flex: 1;
+        position: relative;
+        background: #ffffff;
+      }
+
+      .webviews {
+        position: absolute;
+        inset: 0;
+      }
+
+      .webview-host {
+        position: absolute;
+        inset: 0;
+        display: none;
+      }
+
+      .webview-host.active {
+        display: block;
+      }
+
+      webview {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="window">
+      <header class="tab-bar">
+        <div class="tab-bar-title">Wugis</div>
+        <div class="tabs" id="tabs"></div>
+        <button class="tab-new" id="newTab" title="Nuova scheda">+</button>
+      </header>
+      <main class="content">
+        <div class="webviews" id="webviews"></div>
+      </main>
+    </div>
+
+    <script>
+      const START_URL = 'https://riam.wugis.com';
+
+      let tabsContainer;
+      let webviewsContainer;
+      let tabs = [];
+      let activeTabId = null;
+      let nextTabId = 1;
+
+      function setActiveTab(id) {
+        activeTabId = id;
+        tabs.forEach((tab) => {
+          const isActive = tab.id === id;
+          tab.button.classList.toggle('active', isActive);
+          tab.host.classList.toggle('active', isActive);
+        });
+      }
+
+      function createTab(url, { activate = true } = {}) {
+        if (!tabsContainer || !webviewsContainer) {
+          window.addEventListener(
+            'DOMContentLoaded',
+            () => createTab(url, { activate }),
+            { once: true }
+          );
+          return;
+        }
+
+        const id = `tab-${nextTabId++}`;
+
+        const button = document.createElement('button');
+        button.className = 'tab';
+        button.dataset.tabId = id;
+        const label = document.createElement('span');
+        label.className = 'tab-label';
+        label.textContent = 'Caricamento…';
+        button.appendChild(label);
+        button.addEventListener('click', () => setActiveTab(id));
+        tabsContainer.appendChild(button);
+
+        const host = document.createElement('div');
+        host.className = 'webview-host';
+        host.dataset.tabId = id;
+
+        const view = document.createElement('webview');
+        view.setAttribute('src', url);
+        view.setAttribute('allowpopups', 'true');
+
+        view.addEventListener('page-title-updated', (event) => {
+          label.textContent = event.title || 'Nuova scheda';
+        });
+
+        // Log su QUALSIASI navigazione / apertura finestra dal webview
+        view.addEventListener('will-navigate', (event) => {
+          console.log('will-navigate (clic link stessa finestra):', event.url);
+        });
+
+        view.addEventListener('did-navigate-in-page', (event) => {
+          console.log('did-navigate-in-page (hash / SPA routing):', event.url);
+        });
+
+        // Intercetta link con target="_blank" / window.open
+        view.addEventListener('new-window', (event) => {
+          console.log('new-window (target=_blank / window.open):', event.url);
+          event.preventDefault();
+          createTab(event.url, { activate: true });
+        });
+
+        host.appendChild(view);
+        webviewsContainer.appendChild(host);
+
+        tabs.push({ id, button, host, view, label });
+
+        if (activate) {
+          setActiveTab(id);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        tabsContainer = document.getElementById('tabs');
+        webviewsContainer = document.getElementById('webviews');
+
+        const newTabBtn = document.getElementById('newTab');
+        if (newTabBtn) {
+          newTabBtn.addEventListener('click', () => {
+            createTab(START_URL, { activate: true });
+          });
+        }
+
+        createTab(START_URL, { activate: true });
+      });
+    </script>
+  </body>
+</html>
