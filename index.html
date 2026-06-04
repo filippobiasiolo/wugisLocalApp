@@ -27,6 +27,251 @@
         height: 100%;
       }
 
+      .window.hidden {
+        display: none;
+      }
+
+      :root {
+        --wugis-green: #82c91e;
+        --wugis-green-hover: #74b41a;
+        --wugis-text: #1a1a1a;
+        --wugis-muted: #666666;
+        --wugis-surface: #f1f3f5;
+        --wugis-page: #eef0f2;
+      }
+
+      .setup-wizard {
+        display: none;
+        position: fixed;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        background: var(--wugis-page);
+        z-index: 10;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .setup-wizard.visible {
+        display: flex;
+      }
+
+      .setup-card {
+        width: min(520px, 100%);
+        padding: 36px 40px 28px;
+        background: #ffffff;
+        border: none;
+        border-radius: 20px;
+        box-shadow:
+          0 1px 2px rgba(15, 23, 42, 0.04),
+          0 12px 40px rgba(15, 23, 42, 0.1);
+        box-sizing: border-box;
+      }
+
+      .setup-header {
+        margin-bottom: 28px;
+      }
+
+      .setup-eyebrow {
+        margin: 0 0 6px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      .setup-card h1 {
+        margin: 0 0 10px;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--wugis-text);
+        line-height: 1.2;
+      }
+
+      .setup-desc {
+        margin: 0;
+        font-size: 14px;
+        color: var(--wugis-muted);
+        line-height: 1.5;
+      }
+
+      .setup-step.hidden {
+        display: none;
+      }
+
+      .setup-step-indicator {
+        margin: 0 0 8px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--wugis-green);
+      }
+
+      .setup-uuid-box {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .setup-uuid-value {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        padding: 14px 16px;
+        background: var(--wugis-surface);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+        line-height: 1.4;
+        color: var(--wugis-text);
+        word-break: break-all;
+        user-select: all;
+      }
+
+      .setup-copy {
+        flex-shrink: 0;
+        padding: 0 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        background: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--wugis-text);
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .setup-copy:hover {
+        background: var(--wugis-surface);
+      }
+
+      .setup-field-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--wugis-text);
+      }
+
+      .setup-url-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        margin-bottom: 8px;
+        background: #ffffff;
+        border: 2px solid var(--wugis-green);
+        border-radius: 12px;
+        transition: box-shadow 0.15s ease;
+      }
+
+      .setup-url-wrap:focus-within {
+        box-shadow: 0 0 0 3px rgba(130, 201, 30, 0.25);
+      }
+
+      .setup-url-wrap.has-error {
+        border-color: #dc2626;
+        box-shadow: none;
+      }
+
+      .setup-url-icon {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        color: #9ca3af;
+      }
+
+      .setup-url-wrap input {
+        flex: 1;
+        min-width: 0;
+        padding: 14px 0;
+        border: none;
+        background: transparent;
+        font-size: 15px;
+        color: var(--wugis-text);
+        outline: none;
+      }
+
+      .setup-url-wrap input::placeholder {
+        color: #9ca3af;
+      }
+
+      .setup-hint {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 0 0 20px;
+        font-size: 12px;
+        line-height: 1.45;
+        color: var(--wugis-muted);
+      }
+
+      .setup-hint-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 1px;
+        color: var(--wugis-green);
+      }
+
+      .setup-error {
+        min-height: 0;
+        margin: 0 0 16px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #dc2626;
+      }
+
+      .setup-error:not(:empty) {
+        min-height: 18px;
+      }
+
+      .setup-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-top: 8px;
+      }
+
+      .setup-continue {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 999px;
+        background: var(--wugis-green);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #ffffff;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(130, 201, 30, 0.45);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease,
+          box-shadow 0.15s ease;
+      }
+
+      .setup-continue:hover {
+        background: var(--wugis-green-hover);
+        box-shadow: 0 6px 18px rgba(130, 201, 30, 0.5);
+      }
+
+      .setup-continue:active {
+        transform: translateY(1px);
+      }
+
+      .setup-continue:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
       .tab-bar {
         display: flex;
         align-items: center;
@@ -80,18 +325,34 @@
         text-overflow: ellipsis;
       }
 
-      .tab-new {
+      .tab-new,
+      .tab-reset {
         border-radius: 999px;
-        width: 22px;
         height: 22px;
         border: 1px solid #9ca3af;
         background: #e5e7eb;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 12px;
         color: #4b5563;
         cursor: pointer;
+      }
+
+      .tab-new {
+        width: 22px;
+        font-size: 14px;
+      }
+
+      .tab-reset {
+        padding: 0 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+
+      .tab-new:hover,
+      .tab-reset:hover {
+        background: #d1d5db;
       }
 
       .content {
@@ -123,11 +384,85 @@
     </style>
   </head>
   <body>
-    <div class="window">
+    <div id="setupWizard" class="setup-wizard">
+      <div class="setup-card">
+        <div id="setupStep1" class="setup-step">
+          <header class="setup-header">
+            <p class="setup-step-indicator">Passo 1 di 2</p>
+            <p class="setup-eyebrow">Primo avvio</p>
+            <h1>Configura impianto Wugis</h1>
+            <p class="setup-desc">
+              Inserisci l'URL del tuo impianto. Verrà usato per aprire la pagina di
+              login con l'identificativo di questa macchina.
+            </p>
+          </header>
+
+          <label class="setup-field-label" for="plantUrlInput">URL impianto</label>
+          <div class="setup-url-wrap" id="plantUrlWrap">
+            <svg class="setup-url-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.07 0l1.41-1.41a5 5 0 0 0-7.07-7.07L10 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M14 11a5 5 0 0 0-7.07 0L5.52 12.41a5 5 0 1 0 7.07 7.07L14 19" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+            <input
+              id="plantUrlInput"
+              type="url"
+              placeholder="https://acme.wugis.com"
+              autocomplete="url"
+            />
+          </div>
+          <p class="setup-hint">
+            <svg class="setup-hint-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Connessione cifrata · l'URL viene salvato solo su questo dispositivo.</span>
+          </p>
+
+          <p id="setupError" class="setup-error" aria-live="polite"></p>
+
+          <footer class="setup-footer">
+            <button type="button" class="setup-continue" id="setupStep1Continue">
+              Continua →
+            </button>
+          </footer>
+        </div>
+
+        <div id="setupStep2" class="setup-step hidden">
+          <header class="setup-header">
+            <p class="setup-step-indicator">Passo 2 di 2</p>
+            <p class="setup-eyebrow">Registra dispositivo</p>
+            <h1>UUID per il backend</h1>
+            <p class="setup-desc">
+              Copia questo identificativo e impostalo sul backend Wugis per questa
+              macchina. Non verrà mostrato di nuovo su questo dispositivo.
+            </p>
+          </header>
+
+          <label class="setup-field-label" for="uuidBackendValue">UUID macchina</label>
+          <div class="setup-uuid-box">
+            <output id="uuidBackendValue" class="setup-uuid-value" for="uuidBackendValue"></output>
+            <button type="button" class="setup-copy" id="uuidCopyBtn">Copia</button>
+          </div>
+
+          <p id="setupErrorStep2" class="setup-error" aria-live="polite"></p>
+
+          <footer class="setup-footer">
+            <button type="button" class="setup-continue" id="setupStep2Proceed">
+              Procedi →
+            </button>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <div class="window hidden" id="appShell">
       <header class="tab-bar">
         <div class="tab-bar-title">Wugis</div>
         <div class="tabs" id="tabs"></div>
-        <button class="tab-new" id="newTab" title="Nuova scheda">+</button>
+        <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
+          Cambia impianto
+        </button>
+        <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
       </header>
       <main class="content">
         <div class="webviews" id="webviews"></div>
@@ -135,13 +470,141 @@
     </div>
 
     <script>
-      const START_URL = 'https://riam.wugis.com';
+      const { ipcRenderer } = require('electron');
+
+      const DEFAULT_PLANT_PLACEHOLDER = 'https://acme.wugis.com';
 
       let tabsContainer;
       let webviewsContainer;
+      let setupWizard;
+      let appShell;
+      let setupStep1;
+      let setupStep2;
+      let plantUrlInput;
+      let plantUrlWrap;
+      let uuidBackendValue;
+      let setupError;
+      let setupErrorStep2;
       let tabs = [];
       let activeTabId = null;
       let nextTabId = 1;
+      let machineUuid = null;
+      let savedBaseUrl = null;
+      let uuidRevealed = false;
+      let pendingPlantSetup = false;
+
+      function normalizeBaseUrl(input) {
+        const trimmed = String(input).trim();
+        if (!trimmed) {
+          throw new Error('URL obbligatorio');
+        }
+
+        let withScheme = trimmed;
+        if (!/^https?:\/\//i.test(withScheme)) {
+          withScheme = `https://${withScheme}`;
+        }
+
+        const url = new URL(withScheme);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+          throw new Error('URL deve usare http o https');
+        }
+        if (!url.hostname) {
+          throw new Error('URL non valido');
+        }
+
+        let result = url.origin;
+        if (url.pathname && url.pathname !== '/') {
+          result += url.pathname.replace(/\/$/, '') || url.pathname;
+        }
+
+        return result;
+      }
+
+      function buildPlantUrl(baseUrl, uuid) {
+        const normalized = normalizeBaseUrl(baseUrl);
+        const url = new URL(normalized);
+        url.searchParams.set('uuid', uuid);
+        return url.href;
+      }
+
+      function getPlantTabUrl() {
+        if (!savedBaseUrl || !machineUuid) {
+          throw new Error('Configurazione impianto non disponibile');
+        }
+        return buildPlantUrl(savedBaseUrl, machineUuid);
+      }
+
+      function showSetupError(message, step = 1) {
+        const el = step === 2 ? setupErrorStep2 : setupError;
+        if (el) {
+          el.textContent = message || '';
+        }
+        if (step === 1 && plantUrlWrap) {
+          plantUrlWrap.classList.toggle('has-error', Boolean(message));
+        }
+      }
+
+      function showWizardStep(step) {
+        if (setupStep1) {
+          setupStep1.classList.toggle('hidden', step !== 1);
+        }
+        if (setupStep2) {
+          setupStep2.classList.toggle('hidden', step !== 2);
+        }
+        showSetupError('', 1);
+        showSetupError('', 2);
+        if (step === 1 && plantUrlInput) {
+          plantUrlInput.focus();
+        }
+      }
+
+      function populateUuidStep2() {
+        if (!uuidBackendValue || !machineUuid) return;
+        uuidBackendValue.textContent = machineUuid;
+        uuidBackendValue.title = machineUuid;
+      }
+
+      function clearUuidStep2() {
+        if (uuidBackendValue) {
+          uuidBackendValue.textContent = '';
+          uuidBackendValue.removeAttribute('title');
+        }
+      }
+
+      function showWizard({ step = 1, prefillUrl = '' } = {}) {
+        if (setupWizard) setupWizard.classList.add('visible');
+        if (appShell) appShell.classList.add('hidden');
+        showWizardStep(step);
+        if (step === 1) {
+          clearUuidStep2();
+          if (plantUrlInput) {
+            plantUrlInput.value = prefillUrl;
+            if (!prefillUrl) plantUrlInput.focus();
+          }
+        } else if (step === 2) {
+          populateUuidStep2();
+        }
+      }
+
+      function hideWizard() {
+        if (setupWizard) setupWizard.classList.remove('visible');
+        clearUuidStep2();
+      }
+
+      function showShell() {
+        hideWizard();
+        if (appShell) appShell.classList.remove('hidden');
+      }
+
+      function removeAllTabs() {
+        tabs.forEach((tab) => {
+          tab.button.remove();
+          tab.host.remove();
+        });
+        tabs = [];
+        activeTabId = null;
+        nextTabId = 1;
+      }
 
       function setActiveTab(id) {
         activeTabId = id;
@@ -153,20 +616,12 @@
       }
 
       function createTab(url, { activate = true } = {}) {
-        if (!tabsContainer || !webviewsContainer) {
-          window.addEventListener(
-            'DOMContentLoaded',
-            () => createTab(url, { activate }),
-            { once: true }
-          );
-          return;
-        }
-
         const id = `tab-${nextTabId++}`;
 
         const button = document.createElement('button');
         button.className = 'tab';
         button.dataset.tabId = id;
+        button.type = 'button';
         const label = document.createElement('span');
         label.className = 'tab-label';
         label.textContent = 'Caricamento…';
@@ -186,7 +641,6 @@
           label.textContent = event.title || 'Nuova scheda';
         });
 
-        // Log su QUALSIASI navigazione / apertura finestra dal webview
         view.addEventListener('will-navigate', (event) => {
           console.log('will-navigate (clic link stessa finestra):', event.url);
         });
@@ -195,7 +649,6 @@
           console.log('did-navigate-in-page (hash / SPA routing):', event.url);
         });
 
-        // Intercetta link con target="_blank" / window.open
         view.addEventListener('new-window', (event) => {
           console.log('new-window (target=_blank / window.open):', event.url);
           event.preventDefault();
@@ -212,18 +665,187 @@
         }
       }
 
-      document.addEventListener('DOMContentLoaded', () => {
+      function startApp(baseUrl) {
+        savedBaseUrl = baseUrl;
+        showShell();
+        removeAllTabs();
+        createTab(getPlantTabUrl(), { activate: true });
+      }
+
+      async function savePlantUrl(rawUrl) {
+        try {
+          return await ipcRenderer.invoke('wugis:config-set', { baseUrl: rawUrl });
+        } catch (err) {
+          return { ok: false, error: err.message || 'Errore di salvataggio' };
+        }
+      }
+
+      async function handleStep1Continue() {
+        showSetupError('', 1);
+        const rawUrl = plantUrlInput ? plantUrlInput.value : '';
+
+        const result = await savePlantUrl(rawUrl);
+        if (!result.ok) {
+          showSetupError(result.error || 'URL non valido', 1);
+          return;
+        }
+
+        savedBaseUrl = result.config.baseUrl;
+
+        const showUuid = await ipcRenderer.invoke('wugis:should-show-uuid-step');
+        if (!showUuid.show) {
+          startApp(savedBaseUrl);
+          return;
+        }
+
+        showWizard({ step: 2 });
+      }
+
+      async function handleStep2Proceed() {
+        showSetupError('', 2);
+
+        try {
+          const marked = await ipcRenderer.invoke('wugis:uuid-revealed-mark');
+          uuidRevealed = Boolean(marked && marked.uuidRevealed);
+          pendingPlantSetup = Boolean(marked && marked.pendingPlantSetup);
+        } catch (err) {
+          showSetupError(err.message || 'Errore di salvataggio', 2);
+          return;
+        }
+
+        clearUuidStep2();
+        if (savedBaseUrl) {
+          startApp(savedBaseUrl);
+        } else {
+          const config = await ipcRenderer.invoke('wugis:config-get');
+          if (config && config.baseUrl) {
+            startApp(config.baseUrl);
+          } else {
+            showWizard({ step: 1 });
+            showSetupError('Configurazione impianto mancante', 1);
+          }
+        }
+      }
+
+      async function handleCopyUuid() {
+        if (!machineUuid) return;
+        try {
+          await navigator.clipboard.writeText(machineUuid);
+          const btn = document.getElementById('uuidCopyBtn');
+          if (btn) {
+            const prev = btn.textContent;
+            btn.textContent = 'Copiato';
+            setTimeout(() => {
+              btn.textContent = prev;
+            }, 1500);
+          }
+        } catch {
+          showSetupError('Impossibile copiare negli appunti', 2);
+        }
+      }
+
+      async function handleResetPlant() {
+        const confirmed = confirm(
+          'Vuoi cambiare impianto? Verrà rimossa la configurazione salvata e dovrai inserire di nuovo l\'URL.'
+        );
+        if (!confirmed) return;
+
+        await ipcRenderer.invoke('wugis:config-clear');
+        await ipcRenderer.invoke('wugis:pending-plant-setup');
+        uuidRevealed = true;
+        pendingPlantSetup = true;
+        savedBaseUrl = null;
+        removeAllTabs();
+        showWizard({ step: 1 });
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
         tabsContainer = document.getElementById('tabs');
         webviewsContainer = document.getElementById('webviews');
+        setupWizard = document.getElementById('setupWizard');
+        appShell = document.getElementById('appShell');
+        setupStep1 = document.getElementById('setupStep1');
+        setupStep2 = document.getElementById('setupStep2');
+        plantUrlInput = document.getElementById('plantUrlInput');
+        plantUrlWrap = document.getElementById('plantUrlWrap');
+        uuidBackendValue = document.getElementById('uuidBackendValue');
+        setupError = document.getElementById('setupError');
+        setupErrorStep2 = document.getElementById('setupErrorStep2');
+
+        if (plantUrlInput) {
+          plantUrlInput.placeholder = DEFAULT_PLANT_PLACEHOLDER;
+        }
+
+        const setupStep1Continue = document.getElementById('setupStep1Continue');
+        if (setupStep1Continue) {
+          setupStep1Continue.addEventListener('click', handleStep1Continue);
+        }
+
+        const setupStep2Proceed = document.getElementById('setupStep2Proceed');
+        if (setupStep2Proceed) {
+          setupStep2Proceed.addEventListener('click', handleStep2Proceed);
+        }
+
+        const uuidCopyBtn = document.getElementById('uuidCopyBtn');
+        if (uuidCopyBtn) {
+          uuidCopyBtn.addEventListener('click', handleCopyUuid);
+        }
+
+        if (plantUrlInput) {
+          plantUrlInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              handleStep1Continue();
+            }
+          });
+        }
 
         const newTabBtn = document.getElementById('newTab');
         if (newTabBtn) {
           newTabBtn.addEventListener('click', () => {
-            createTab(START_URL, { activate: true });
+            try {
+              createTab(getPlantTabUrl(), { activate: true });
+            } catch (err) {
+              showWizard({ step: 1 });
+              showSetupError(err.message, 1);
+            }
           });
         }
 
-        createTab(START_URL, { activate: true });
+        const resetBtn = document.getElementById('resetPlant');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', handleResetPlant);
+        }
+
+        try {
+          machineUuid = await ipcRenderer.invoke('wugis:machine-uuid');
+        } catch (err) {
+          showWizard({ step: 1 });
+          showSetupError(
+            err.message || 'Impossibile leggere l\'identificativo della macchina',
+            1
+          );
+          return;
+        }
+
+        const deviceStateResult = await ipcRenderer.invoke('wugis:device-state-get');
+        uuidRevealed = Boolean(deviceStateResult && deviceStateResult.uuidRevealed);
+        pendingPlantSetup = Boolean(
+          deviceStateResult && deviceStateResult.pendingPlantSetup
+        );
+
+        const config = await ipcRenderer.invoke('wugis:config-get');
+        if (config && config.baseUrl) {
+          savedBaseUrl = config.baseUrl;
+          const showUuid = await ipcRenderer.invoke('wugis:should-show-uuid-step');
+          if (showUuid.show) {
+            showWizard({ step: 2 });
+          } else {
+            startApp(config.baseUrl);
+          }
+        } else {
+          showWizard({ step: 1 });
+        }
       });
     </script>
   </body>
