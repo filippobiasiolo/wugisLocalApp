@@ -38,12 +38,23 @@
         --wugis-muted: #666666;
         --wugis-surface: #f1f3f5;
         --wugis-page: #eef0f2;
-        --tab-bar-bg: var(--wugis-surface);
-        --tab-bar-border: #dee2e6;
-        --tab-bar-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-        --tab-inactive-hover: rgba(255, 255, 255, 0.7);
-        --tab-active-border: var(--wugis-green);
-        --tab-green-tint: rgba(130, 201, 30, 0.15);
+        --chrome-tabstrip: #202124;
+        --chrome-tab-hover: #292a2d;
+        --chrome-tab-active: #323639;
+        --chrome-tab-text: #e8eaed;
+        --chrome-tab-text-muted: #9aa0a6;
+        --chrome-tab-control-hover: rgba(232, 234, 237, 0.1);
+        --chrome-tab-close-hover: rgba(232, 234, 237, 0.14);
+        --tab-bar-collapsed: 6px;
+        --tab-bar-height: 44px;
+        --tab-item-height: 36px;
+        --tab-control-size: 30px;
+        --tab-gap: 6px;
+        --tab-toggle-size: 22px;
+        --tab-toggle-bg: #323639;
+        --tab-toggle-border: #5f6368;
+        --tab-toggle-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        --tab-bar-expand-duration: 0.28s;
       }
 
       .setup-wizard {
@@ -278,31 +289,128 @@
         transform: none;
       }
 
-      .tab-bar {
+      .tab-bar-zone {
+        flex-shrink: 0;
+        height: var(--tab-bar-collapsed);
+        overflow: visible;
+        background: var(--chrome-tabstrip);
+        position: relative;
+        z-index: 10;
+        transition: height var(--tab-bar-expand-duration) cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .tab-bar-zone.expanded {
+        height: var(--tab-bar-height);
+      }
+
+      .tab-bar-toggle {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%, 50%);
+        width: var(--tab-toggle-size);
+        height: var(--tab-toggle-size);
+        margin: 0;
+        padding: 0;
+        border: 1px solid var(--tab-toggle-border);
+        border-radius: 50%;
+        background: var(--tab-toggle-bg);
+        box-shadow: var(--tab-toggle-shadow);
+        cursor: pointer;
+        z-index: 20;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 8px 12px;
-        background: var(--tab-bar-bg);
-        border-bottom: 1px solid var(--tab-bar-border);
-        box-shadow: var(--tab-bar-shadow);
+        justify-content: center;
+        color: var(--chrome-tab-text-muted);
+        transition:
+          color 0.15s ease,
+          box-shadow 0.15s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+
+      .tab-bar-toggle:hover {
+        color: var(--chrome-tab-text);
+        background: #3c4043;
+        border-color: #80868b;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+
+      .tab-bar-toggle-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 0;
+      }
+
+      .tab-bar-toggle-icon svg {
+        display: block;
+      }
+
+      .tab-bar-toggle-icon-up {
+        display: none;
+      }
+
+      .tab-bar-zone.expanded .tab-bar-toggle-icon-down {
+        display: none;
+      }
+
+      .tab-bar-zone.expanded .tab-bar-toggle-icon-up {
+        display: flex;
+      }
+
+      .tab-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 100%;
+        padding: 0 8px 4px;
+        background: var(--chrome-tabstrip);
+        border-bottom: none;
         user-select: none;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .tab-bar-zone:not(.expanded) .tab-bar {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .tab-bar button {
+        margin: 0;
+        font-family: inherit;
+      }
+
+      .tab-strip,
+      .tab-reset {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease 0.04s;
+      }
+
+      .tab-bar-zone.expanded .tab-strip,
+      .tab-bar-zone.expanded .tab-reset {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       .tab-strip {
         display: flex;
-        align-items: center;
-        gap: 6px;
+        align-items: flex-end;
+        gap: 4px;
         flex: 1;
         min-width: 0;
+        height: var(--tab-item-height);
       }
 
       .tabs {
         display: flex;
-        align-items: stretch;
-        gap: 4px;
+        align-items: flex-end;
+        gap: var(--tab-gap);
+        height: 100%;
         overflow-x: auto;
-        padding: 0 2px;
+        padding: 0;
         scrollbar-width: none;
       }
 
@@ -311,48 +419,49 @@
       }
 
       .tab {
+        box-sizing: border-box;
+        position: relative;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        min-height: 28px;
-        max-width: 200px;
-        padding: 4px 6px 4px 12px;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        border-bottom: 2px solid transparent;
+        gap: 6px;
+        height: var(--tab-item-height);
+        max-width: 220px;
+        min-width: 44px;
+        padding: 0 10px;
+        border-radius: 8px 8px 0 0;
+        border: none;
         background: transparent;
         font-size: 12px;
-        font-weight: 500;
-        color: var(--wugis-muted);
+        font-weight: 400;
+        color: var(--chrome-tab-text-muted);
         cursor: pointer;
         white-space: nowrap;
         overflow: hidden;
         font-family: inherit;
+        flex-shrink: 0;
+        transform: none;
         transition:
           background 0.15s ease,
-          color 0.15s ease,
-          border-color 0.15s ease,
-          box-shadow 0.15s ease;
+          color 0.15s ease;
       }
 
       .tab:hover:not(.active) {
-        background: var(--tab-inactive-hover);
-        color: var(--wugis-text);
+        background: var(--chrome-tab-hover);
+        color: var(--chrome-tab-text);
       }
 
       .tab.active {
-        background: #ffffff;
-        color: var(--wugis-text);
-        border-color: #e9ecef;
-        border-bottom-color: var(--tab-active-border);
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        background: var(--chrome-tab-active);
+        color: var(--chrome-tab-text);
+        z-index: 1;
       }
 
       .tab-label {
+        flex: 0 1 auto;
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-width: 0;
-        flex: 1;
+        white-space: nowrap;
       }
 
       .tab-close {
@@ -361,28 +470,34 @@
         height: 18px;
         padding: 0;
         border: none;
-        border-radius: 999px;
+        border-radius: 50%;
         background: transparent;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1;
-        color: #9ca3af;
+        color: var(--chrome-tab-text-muted);
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
         transition:
           background 0.15s ease,
-          color 0.15s ease;
+          color 0.15s ease,
+          opacity 0.15s ease;
+      }
+
+      .tab:hover .tab-close,
+      .tab.active .tab-close {
+        opacity: 1;
       }
 
       .tab-close:hover {
-        background: #e9ecef;
-        color: #495057;
+        background: var(--chrome-tab-close-hover);
+        color: var(--chrome-tab-text);
       }
 
-      .tab.active .tab-close:hover {
-        background: #dee2e6;
-        color: #343a40;
+      .tab.closing {
+        pointer-events: none;
       }
 
       .tab-close:disabled,
@@ -391,58 +506,57 @@
       }
 
       .tab-new {
+        box-sizing: border-box;
         flex-shrink: 0;
-        width: 24px;
-        height: 24px;
-        border-radius: 999px;
-        border: 1px dashed #ced4da;
+        width: var(--tab-control-size);
+        height: var(--tab-control-size);
+        margin-bottom: 3px;
+        border: none;
+        border-radius: 50%;
         background: transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 18px;
+        font-weight: 300;
         line-height: 1;
-        color: var(--wugis-muted);
+        color: var(--chrome-tab-text-muted);
         cursor: pointer;
         transition:
           background 0.15s ease,
-          border-color 0.15s ease,
           color 0.15s ease;
       }
 
       .tab-new:hover {
-        background: var(--tab-green-tint);
-        border-color: var(--wugis-green);
-        border-style: solid;
-        color: var(--wugis-green);
+        background: var(--chrome-tab-control-hover);
+        color: var(--chrome-tab-text);
       }
 
       .tab-reset {
+        box-sizing: border-box;
         flex-shrink: 0;
-        height: 28px;
+        height: var(--tab-control-size);
+        margin-bottom: 3px;
         padding: 0 12px;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        border: none;
         background: transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 12px;
-        font-weight: 500;
-        color: var(--wugis-muted);
+        font-weight: 400;
+        color: var(--chrome-tab-text-muted);
         white-space: nowrap;
         cursor: pointer;
         transition:
           background 0.15s ease,
-          border-color 0.15s ease,
           color 0.15s ease;
       }
 
       .tab-reset:hover {
-        background: #ffffff;
-        border-color: #ced4da;
-        color: var(--wugis-text);
+        background: var(--chrome-tab-control-hover);
+        color: var(--chrome-tab-text);
       }
 
       .content {
@@ -546,14 +660,47 @@
     </div>
 
     <div class="window hidden" id="appShell">
-      <header class="tab-bar">
-        <div class="tab-strip">
-          <div class="tabs" id="tabs"></div>
-          <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
-        </div>
-        <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
-          Cambia impianto
+      <header class="tab-bar-zone" id="tabBarZone" aria-label="Barra schede">
+        <button
+          type="button"
+          class="tab-bar-toggle"
+          id="tabBarToggle"
+          aria-expanded="false"
+          aria-controls="tabBar"
+          title="Mostra schede"
+        >
+          <span class="tab-bar-toggle-icon tab-bar-toggle-icon-down" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path
+                d="M3 4.5L6 7.5L9 4.5"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span class="tab-bar-toggle-icon tab-bar-toggle-icon-up" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path
+                d="M3 7.5L6 4.5L9 7.5"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
         </button>
+        <div class="tab-bar" id="tabBar">
+          <div class="tab-strip">
+            <div class="tabs" id="tabs"></div>
+            <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
+          </div>
+          <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
+            Cambia impianto
+          </button>
+        </div>
       </header>
       <main class="content">
         <div class="webviews" id="webviews"></div>
@@ -562,11 +709,16 @@
 
     <script>
       const { ipcRenderer } = require('electron');
+      const { animate } = require('motion');
 
       const DEFAULT_PLANT_PLACEHOLDER = 'https://acme.wugis.com';
+      const closingTabIds = new Set();
 
       let tabsContainer;
       let webviewsContainer;
+      let tabBarZone;
+      let tabBarToggle;
+      let tabBarExpanded = false;
       let setupWizard;
       let appShell;
       let setupStep1;
@@ -687,6 +839,21 @@
         if (appShell) appShell.classList.remove('hidden');
       }
 
+      function setTabBarExpanded(expanded) {
+        tabBarExpanded = expanded;
+        if (tabBarZone) {
+          tabBarZone.classList.toggle('expanded', expanded);
+        }
+        if (tabBarToggle) {
+          tabBarToggle.setAttribute('aria-expanded', String(expanded));
+          tabBarToggle.title = expanded ? 'Nascondi schede' : 'Mostra schede';
+        }
+      }
+
+      function toggleTabBar() {
+        setTabBarExpanded(!tabBarExpanded);
+      }
+
       function removeAllTabs() {
         tabs.forEach((tab) => {
           tab.button.remove();
@@ -703,7 +870,57 @@
           const isActive = tab.id === id;
           tab.button.classList.toggle('active', isActive);
           tab.host.classList.toggle('active', isActive);
+          if (isActive) {
+            tab.host.style.opacity = '1';
+          }
         });
+      }
+
+      function clearTabMotionStyles(element) {
+        if (!element) return;
+        element.style.transform = '';
+        element.style.opacity = '';
+      }
+
+      function animateTabOpen(button, host, { activate = true } = {}) {
+        animate(
+          button,
+          { opacity: [0, 1], y: [3, 0] },
+          { type: 'spring', stiffness: 520, damping: 32, mass: 0.8 }
+        ).finished.then(() => clearTabMotionStyles(button));
+
+        if (activate && host) {
+          host.style.opacity = '0';
+          animate(
+            host,
+            { opacity: [0, 1] },
+            { duration: 0.22, easing: [0.22, 1, 0.36, 1] }
+          );
+        }
+      }
+
+      async function animateTabClose(button, host, { wasActive = false } = {}) {
+        button.classList.add('closing');
+
+        const animations = [
+          animate(
+            button,
+            { opacity: 0, y: 3 },
+            { duration: 0.18, easing: [0.4, 0, 1, 1] }
+          ).finished
+        ];
+
+        if (wasActive && host) {
+          animations.push(
+            animate(
+              host,
+              { opacity: 0 },
+              { duration: 0.15, easing: [0.4, 0, 1, 1] }
+            ).finished
+          );
+        }
+
+        await Promise.all(animations);
       }
 
       function updateTabCloseButtons() {
@@ -716,8 +933,8 @@
         });
       }
 
-      function closeTab(id) {
-        if (tabs.length <= 1) return;
+      async function closeTab(id) {
+        if (tabs.length <= 1 || closingTabIds.has(id)) return;
 
         const index = tabs.findIndex((tab) => tab.id === id);
         if (index === -1) return;
@@ -725,18 +942,26 @@
         const closing = tabs[index];
         const wasActive = activeTabId === id;
 
-        closing.button.remove();
-        closing.host.remove();
-        tabs = tabs.filter((tab) => tab.id !== id);
+        closingTabIds.add(id);
 
-        if (wasActive && tabs.length > 0) {
-          const nextIndex = index > 0 ? index - 1 : 0;
-          setActiveTab(tabs[nextIndex].id);
-        } else if (tabs.length === 0) {
-          activeTabId = null;
+        try {
+          await animateTabClose(closing.button, closing.host, { wasActive });
+
+          closing.button.remove();
+          closing.host.remove();
+          tabs = tabs.filter((tab) => tab.id !== id);
+
+          if (wasActive && tabs.length > 0) {
+            const nextIndex = index > 0 ? index - 1 : 0;
+            setActiveTab(tabs[nextIndex].id);
+          } else if (tabs.length === 0) {
+            activeTabId = null;
+          }
+
+          updateTabCloseButtons();
+        } finally {
+          closingTabIds.delete(id);
         }
-
-        updateTabCloseButtons();
       }
 
       function createTab(url, { activate = true } = {}) {
@@ -807,6 +1032,7 @@
           setActiveTab(id);
         }
 
+        animateTabOpen(button, host, { activate });
         updateTabCloseButtons();
       }
 
@@ -907,8 +1133,17 @@
       document.addEventListener('DOMContentLoaded', async () => {
         tabsContainer = document.getElementById('tabs');
         webviewsContainer = document.getElementById('webviews');
+        tabBarZone = document.getElementById('tabBarZone');
+        tabBarToggle = document.getElementById('tabBarToggle');
         setupWizard = document.getElementById('setupWizard');
         appShell = document.getElementById('appShell');
+
+        if (tabBarToggle) {
+          tabBarToggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleTabBar();
+          });
+        }
         setupStep1 = document.getElementById('setupStep1');
         setupStep2 = document.getElementById('setupStep2');
         plantUrlInput = document.getElementById('plantUrlInput');
