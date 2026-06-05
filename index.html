@@ -385,10 +385,6 @@
         color: #343a40;
       }
 
-      .tab.closing {
-        pointer-events: none;
-      }
-
       .tab-close:disabled,
       .tab-close.hidden {
         display: none;
@@ -566,10 +562,8 @@
 
     <script>
       const { ipcRenderer } = require('electron');
-      const { animate } = require('motion');
 
       const DEFAULT_PLANT_PLACEHOLDER = 'https://acme.wugis.com';
-      const closingTabIds = new Set();
 
       let tabsContainer;
       let webviewsContainer;
@@ -709,51 +703,7 @@
           const isActive = tab.id === id;
           tab.button.classList.toggle('active', isActive);
           tab.host.classList.toggle('active', isActive);
-          if (isActive) {
-            tab.host.style.opacity = '1';
-          }
         });
-      }
-
-      function animateTabOpen(button, host, { activate = true } = {}) {
-        animate(
-          button,
-          { opacity: [0, 1], scale: [0.9, 1] },
-          { type: 'spring', stiffness: 520, damping: 32, mass: 0.8 }
-        );
-
-        if (activate && host) {
-          host.style.opacity = '0';
-          animate(
-            host,
-            { opacity: [0, 1] },
-            { duration: 0.22, easing: [0.22, 1, 0.36, 1] }
-          );
-        }
-      }
-
-      async function animateTabClose(button, host, { wasActive = false } = {}) {
-        button.classList.add('closing');
-
-        const animations = [
-          animate(
-            button,
-            { opacity: 0, scale: 0.9 },
-            { duration: 0.18, easing: [0.4, 0, 1, 1] }
-          ).finished
-        ];
-
-        if (wasActive && host) {
-          animations.push(
-            animate(
-              host,
-              { opacity: 0 },
-              { duration: 0.15, easing: [0.4, 0, 1, 1] }
-            ).finished
-          );
-        }
-
-        await Promise.all(animations);
       }
 
       function updateTabCloseButtons() {
@@ -766,8 +716,8 @@
         });
       }
 
-      async function closeTab(id) {
-        if (tabs.length <= 1 || closingTabIds.has(id)) return;
+      function closeTab(id) {
+        if (tabs.length <= 1) return;
 
         const index = tabs.findIndex((tab) => tab.id === id);
         if (index === -1) return;
@@ -775,26 +725,18 @@
         const closing = tabs[index];
         const wasActive = activeTabId === id;
 
-        closingTabIds.add(id);
+        closing.button.remove();
+        closing.host.remove();
+        tabs = tabs.filter((tab) => tab.id !== id);
 
-        try {
-          await animateTabClose(closing.button, closing.host, { wasActive });
-
-          closing.button.remove();
-          closing.host.remove();
-          tabs = tabs.filter((tab) => tab.id !== id);
-
-          if (wasActive && tabs.length > 0) {
-            const nextIndex = index > 0 ? index - 1 : 0;
-            setActiveTab(tabs[nextIndex].id);
-          } else if (tabs.length === 0) {
-            activeTabId = null;
-          }
-
-          updateTabCloseButtons();
-        } finally {
-          closingTabIds.delete(id);
+        if (wasActive && tabs.length > 0) {
+          const nextIndex = index > 0 ? index - 1 : 0;
+          setActiveTab(tabs[nextIndex].id);
+        } else if (tabs.length === 0) {
+          activeTabId = null;
         }
+
+        updateTabCloseButtons();
       }
 
       function createTab(url, { activate = true } = {}) {
@@ -865,7 +807,6 @@
           setActiveTab(id);
         }
 
-        animateTabOpen(button, host, { activate });
         updateTabCloseButtons();
       }
 
