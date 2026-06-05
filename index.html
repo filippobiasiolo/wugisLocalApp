@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <title>Wugis Electron Shell</title>
+    <title>Wugis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       html,
@@ -38,6 +38,12 @@
         --wugis-muted: #666666;
         --wugis-surface: #f1f3f5;
         --wugis-page: #eef0f2;
+        --tab-bar-bg: var(--wugis-surface);
+        --tab-bar-border: #dee2e6;
+        --tab-bar-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        --tab-inactive-hover: rgba(255, 255, 255, 0.7);
+        --tab-active-border: var(--wugis-green);
+        --tab-green-tint: rgba(130, 201, 30, 0.15);
       }
 
       .setup-wizard {
@@ -275,84 +281,172 @@
       .tab-bar {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 6px 8px;
-        background: #e5e7eb;
-        border-bottom: 1px solid #d1d5db;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--tab-bar-bg);
+        border-bottom: 1px solid var(--tab-bar-border);
+        box-shadow: var(--tab-bar-shadow);
         user-select: none;
       }
 
-      .tab-bar-title {
-        font-size: 12px;
-        font-weight: 600;
-        color: #4b5563;
-        padding: 4px 8px;
+      .tab-strip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
       }
 
       .tabs {
         display: flex;
         align-items: stretch;
         gap: 4px;
-        flex: 1;
         overflow-x: auto;
-        padding: 0 4px;
+        padding: 0 2px;
+        scrollbar-width: none;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
       }
 
       .tab {
         display: inline-flex;
         align-items: center;
+        gap: 4px;
+        min-height: 28px;
         max-width: 200px;
-        padding: 4px 10px;
-        border-radius: 6px;
+        padding: 4px 6px 4px 12px;
+        border-radius: 8px;
         border: 1px solid transparent;
+        border-bottom: 2px solid transparent;
         background: transparent;
         font-size: 12px;
-        color: #4b5563;
+        font-weight: 500;
+        color: var(--wugis-muted);
         cursor: pointer;
         white-space: nowrap;
-        text-overflow: ellipsis;
         overflow: hidden;
+        font-family: inherit;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease,
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      .tab:hover:not(.active) {
+        background: var(--tab-inactive-hover);
+        color: var(--wugis-text);
       }
 
       .tab.active {
         background: #ffffff;
-        border-color: #d1d5db;
-        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+        color: var(--wugis-text);
+        border-color: #e9ecef;
+        border-bottom-color: var(--tab-active-border);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
       }
 
       .tab-label {
         overflow: hidden;
         text-overflow: ellipsis;
+        min-width: 0;
+        flex: 1;
       }
 
-      .tab-new,
-      .tab-reset {
+      .tab-close {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: none;
         border-radius: 999px;
-        height: 22px;
-        border: 1px solid #9ca3af;
-        background: #e5e7eb;
+        background: transparent;
+        font-size: 14px;
+        line-height: 1;
+        color: #9ca3af;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .tab-close:hover {
+        background: #e9ecef;
+        color: #495057;
+      }
+
+      .tab.active .tab-close:hover {
+        background: #dee2e6;
+        color: #343a40;
+      }
+
+      .tab.closing {
+        pointer-events: none;
+      }
+
+      .tab-close:disabled,
+      .tab-close.hidden {
+        display: none;
+      }
+
+      .tab-new {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        border: 1px dashed #ced4da;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1;
+        color: var(--wugis-muted);
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .tab-new:hover {
+        background: var(--tab-green-tint);
+        border-color: var(--wugis-green);
+        border-style: solid;
+        color: var(--wugis-green);
+      }
+
+      .tab-reset {
+        flex-shrink: 0;
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        background: transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 12px;
-        color: #4b5563;
-        cursor: pointer;
-      }
-
-      .tab-new {
-        width: 22px;
-        font-size: 14px;
-      }
-
-      .tab-reset {
-        padding: 0 10px;
-        border-radius: 6px;
+        font-weight: 500;
+        color: var(--wugis-muted);
         white-space: nowrap;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease;
       }
 
-      .tab-new:hover,
       .tab-reset:hover {
-        background: #d1d5db;
+        background: #ffffff;
+        border-color: #ced4da;
+        color: var(--wugis-text);
       }
 
       .content {
@@ -457,12 +551,13 @@
 
     <div class="window hidden" id="appShell">
       <header class="tab-bar">
-        <div class="tab-bar-title">Wugis</div>
-        <div class="tabs" id="tabs"></div>
+        <div class="tab-strip">
+          <div class="tabs" id="tabs"></div>
+          <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
+        </div>
         <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
           Cambia impianto
         </button>
-        <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
       </header>
       <main class="content">
         <div class="webviews" id="webviews"></div>
@@ -471,8 +566,10 @@
 
     <script>
       const { ipcRenderer } = require('electron');
+      const { animate } = require('motion');
 
       const DEFAULT_PLANT_PLACEHOLDER = 'https://acme.wugis.com';
+      const closingTabIds = new Set();
 
       let tabsContainer;
       let webviewsContainer;
@@ -612,21 +709,125 @@
           const isActive = tab.id === id;
           tab.button.classList.toggle('active', isActive);
           tab.host.classList.toggle('active', isActive);
+          if (isActive) {
+            tab.host.style.opacity = '1';
+          }
         });
+      }
+
+      function animateTabOpen(button, host, { activate = true } = {}) {
+        animate(
+          button,
+          { opacity: [0, 1], scale: [0.9, 1] },
+          { type: 'spring', stiffness: 520, damping: 32, mass: 0.8 }
+        );
+
+        if (activate && host) {
+          host.style.opacity = '0';
+          animate(
+            host,
+            { opacity: [0, 1] },
+            { duration: 0.22, easing: [0.22, 1, 0.36, 1] }
+          );
+        }
+      }
+
+      async function animateTabClose(button, host, { wasActive = false } = {}) {
+        button.classList.add('closing');
+
+        const animations = [
+          animate(
+            button,
+            { opacity: 0, scale: 0.9 },
+            { duration: 0.18, easing: [0.4, 0, 1, 1] }
+          ).finished
+        ];
+
+        if (wasActive && host) {
+          animations.push(
+            animate(
+              host,
+              { opacity: 0 },
+              { duration: 0.15, easing: [0.4, 0, 1, 1] }
+            ).finished
+          );
+        }
+
+        await Promise.all(animations);
+      }
+
+      function updateTabCloseButtons() {
+        const canClose = tabs.length > 1;
+        tabs.forEach((tab) => {
+          if (tab.closeBtn) {
+            tab.closeBtn.classList.toggle('hidden', !canClose);
+            tab.closeBtn.disabled = !canClose;
+          }
+        });
+      }
+
+      async function closeTab(id) {
+        if (tabs.length <= 1 || closingTabIds.has(id)) return;
+
+        const index = tabs.findIndex((tab) => tab.id === id);
+        if (index === -1) return;
+
+        const closing = tabs[index];
+        const wasActive = activeTabId === id;
+
+        closingTabIds.add(id);
+
+        try {
+          await animateTabClose(closing.button, closing.host, { wasActive });
+
+          closing.button.remove();
+          closing.host.remove();
+          tabs = tabs.filter((tab) => tab.id !== id);
+
+          if (wasActive && tabs.length > 0) {
+            const nextIndex = index > 0 ? index - 1 : 0;
+            setActiveTab(tabs[nextIndex].id);
+          } else if (tabs.length === 0) {
+            activeTabId = null;
+          }
+
+          updateTabCloseButtons();
+        } finally {
+          closingTabIds.delete(id);
+        }
       }
 
       function createTab(url, { activate = true } = {}) {
         const id = `tab-${nextTabId++}`;
 
-        const button = document.createElement('button');
+        const button = document.createElement('div');
         button.className = 'tab';
         button.dataset.tabId = id;
-        button.type = 'button';
+        button.setAttribute('role', 'tab');
+        button.tabIndex = 0;
         const label = document.createElement('span');
         label.className = 'tab-label';
         label.textContent = 'Caricamento…';
         button.appendChild(label);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'tab-close';
+        closeBtn.type = 'button';
+        closeBtn.textContent = '×';
+        closeBtn.title = 'Chiudi scheda';
+        closeBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          closeTab(id);
+        });
+        button.appendChild(closeBtn);
+
         button.addEventListener('click', () => setActiveTab(id));
+        button.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setActiveTab(id);
+          }
+        });
         tabsContainer.appendChild(button);
 
         const host = document.createElement('div');
@@ -658,11 +859,14 @@
         host.appendChild(view);
         webviewsContainer.appendChild(host);
 
-        tabs.push({ id, button, host, view, label });
+        tabs.push({ id, button, host, view, label, closeBtn });
 
         if (activate) {
           setActiveTab(id);
         }
+
+        animateTabOpen(button, host, { activate });
+        updateTabCloseButtons();
       }
 
       function startApp(baseUrl) {
