@@ -1,7 +1,15 @@
+const path = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { machineIdSync } = require('node-machine-id');
 const configStore = require('./config-store');
 const deviceState = require('./device-state');
+
+const APP_ICON_PATH = path.join(
+  __dirname,
+  'build',
+  'icons',
+  process.platform === 'win32' ? 'icon.ico' : '256x256.png'
+);
 
 function getMachineUuid() {
   return machineIdSync({ original: true });
@@ -53,6 +61,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: APP_ICON_PATH,
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
@@ -72,6 +81,10 @@ app.whenReady().then(() => {
     console.log('Machine ID:', machineId);
   } catch (err) {
     console.error('Impossibile leggere Machine ID:', err.message);
+  }
+
+  if (process.platform === 'darwin' && app.dock) {
+    app.dock.setIcon(APP_ICON_PATH);
   }
 
   createWindow();

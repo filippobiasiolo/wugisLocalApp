@@ -35,7 +35,8 @@
   },
   "devDependencies": {
     "electron": "^40.6.1",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "electron-icon-builder": "^2.0.1"
   },
   "dependencies": {
     "electron-tabs": "^1.0.4",
