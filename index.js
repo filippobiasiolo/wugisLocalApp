@@ -1,5 +1,5 @@
 const path = require('path');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const { machineIdSync } = require('node-machine-id');
 const configStore = require('./config-store');
 const deviceState = require('./device-state');
@@ -74,6 +74,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   console.log('app.whenReady');
+  Menu.setApplicationMenu(null);
   registerIpcHandlers();
 
   try {
