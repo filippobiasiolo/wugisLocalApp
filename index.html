@@ -383,14 +383,14 @@
       }
 
       .tab-strip,
-      .tab-reset {
+      .tab-bar-actions {
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.18s ease 0.04s;
       }
 
       .tab-bar-zone.expanded .tab-strip,
-      .tab-bar-zone.expanded .tab-reset {
+      .tab-bar-zone.expanded .tab-bar-actions {
         opacity: 1;
         pointer-events: auto;
       }
@@ -532,11 +532,77 @@
         color: var(--chrome-tab-text);
       }
 
-      .tab-reset {
-        box-sizing: border-box;
+      .tab-bar-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         flex-shrink: 0;
         height: var(--tab-control-size);
         margin-bottom: 3px;
+      }
+
+      .zoom-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        height: 100%;
+      }
+
+      .zoom-label {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--chrome-tab-text-muted);
+        white-space: nowrap;
+        line-height: 1;
+      }
+
+      .zoom-buttons {
+        display: inline-flex;
+        align-items: stretch;
+        gap: 0;
+        box-sizing: border-box;
+        height: 22px;
+        border: 1px solid var(--chrome-tab-text-muted);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .zoom-controls button {
+        box-sizing: border-box;
+        width: 26px;
+        height: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1;
+        color: var(--chrome-tab-text-muted);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .zoom-controls button:hover {
+        background: var(--chrome-tab-control-hover);
+        color: var(--chrome-tab-text);
+      }
+
+      .tab-reset {
+        box-sizing: border-box;
+        flex-shrink: 0;
+        height: 100%;
+        margin: 0;
         padding: 0 12px;
         border-radius: 4px;
         border: none;
@@ -546,6 +612,7 @@
         justify-content: center;
         font-size: 12px;
         font-weight: 400;
+        line-height: 1;
         color: var(--chrome-tab-text-muted);
         white-space: nowrap;
         cursor: pointer;
@@ -697,9 +764,18 @@
             <div class="tabs" id="tabs"></div>
             <button class="tab-new" id="newTab" type="button" title="Nuova scheda">+</button>
           </div>
-          <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
-            Logout
-          </button>
+          <div class="tab-bar-actions">
+            <div class="zoom-controls" aria-label="Zoom schermo">
+              <span class="zoom-label">Zoom</span>
+              <div class="zoom-buttons">
+                <button id="zoomOut" type="button" title="Zoom −">−</button>
+                <button id="zoomIn" type="button" title="Zoom +">+</button>
+              </div>
+            </div>
+            <button class="tab-reset" id="resetPlant" type="button" title="Cambia impianto">
+              Logout
+            </button>
+          </div>
         </div>
       </header>
       <main class="content">
@@ -713,6 +789,9 @@
 
       const DEFAULT_PLANT_PLACEHOLDER = 'https://acme.wugis.com';
       const closingTabIds = new Set();
+      const ZOOM_MIN = 0.5;
+      const ZOOM_MAX = 2;
+      const ZOOM_STEP = 0.1;
 
       let tabsContainer;
       let webviewsContainer;
@@ -735,6 +814,7 @@
       let savedBaseUrl = null;
       let uuidRevealed = false;
       let pendingPlantSetup = false;
+      let zoomFactor = 1;
 
       function normalizeBaseUrl(input) {
         const trimmed = String(input).trim();
@@ -864,6 +944,44 @@
         nextTabId = 1;
       }
 
+      function getActiveWebview() {
+        const tab = tabs.find((t) => t.id === activeTabId);
+        return tab ? tab.view : null;
+      }
+
+      function applyZoomToView(view) {
+        if (!view || typeof view.setZoomFactor !== 'function') return;
+        try {
+          view.setZoomFactor(zoomFactor);
+        } catch (_) {
+          // Webview may not be ready yet
+        }
+      }
+
+      function applyZoom() {
+        applyZoomToView(getActiveWebview());
+      }
+
+      function clampZoom(value) {
+        return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(value * 10) / 10));
+      }
+
+      function persistZoom() {
+        ipcRenderer.invoke('wugis:zoom-set', { zoomFactor }).catch(() => {});
+      }
+
+      function zoomIn() {
+        zoomFactor = clampZoom(zoomFactor + ZOOM_STEP);
+        applyZoom();
+        persistZoom();
+      }
+
+      function zoomOut() {
+        zoomFactor = clampZoom(zoomFactor - ZOOM_STEP);
+        applyZoom();
+        persistZoom();
+      }
+
       function setActiveTab(id) {
         activeTabId = id;
         tabs.forEach((tab) => {
@@ -872,6 +990,7 @@
           tab.host.classList.toggle('active', isActive);
           if (isActive) {
             tab.host.style.opacity = '1';
+            applyZoomToView(tab.view);
           }
         });
       }
@@ -1021,6 +1140,10 @@
           console.log('new-window (target=_blank / window.open):', event.url);
           event.preventDefault();
           createTab(event.url, { activate: true });
+        });
+
+        view.addEventListener('dom-ready', () => {
+          applyZoomToView(view);
         });
 
         host.appendChild(view);
@@ -1197,6 +1320,16 @@
           resetBtn.addEventListener('click', handleResetPlant);
         }
 
+        const zoomInBtn = document.getElementById('zoomIn');
+        if (zoomInBtn) {
+          zoomInBtn.addEventListener('click', zoomIn);
+        }
+
+        const zoomOutBtn = document.getElementById('zoomOut');
+        if (zoomOutBtn) {
+          zoomOutBtn.addEventListener('click', zoomOut);
+        }
+
         try {
           machineUuid = await ipcRenderer.invoke('wugis:machine-uuid');
         } catch (err) {
@@ -1213,6 +1346,9 @@
         pendingPlantSetup = Boolean(
           deviceStateResult && deviceStateResult.pendingPlantSetup
         );
+        if (deviceStateResult && deviceStateResult.zoomFactor != null) {
+          zoomFactor = clampZoom(deviceStateResult.zoomFactor);
+        }
 
         const config = await ipcRenderer.invoke('wugis:config-get');
         if (config && config.baseUrl) {

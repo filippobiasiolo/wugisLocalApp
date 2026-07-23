@@ -42,6 +42,15 @@ function registerIpcHandlers() {
 
   ipcMain.handle('wugis:device-state-get', () => deviceState.getDeviceState());
 
+  ipcMain.handle('wugis:zoom-get', () => ({
+    zoomFactor: deviceState.getZoomFactor()
+  }));
+
+  ipcMain.handle('wugis:zoom-set', (_event, data) => {
+    const result = deviceState.setZoomFactor(data && data.zoomFactor);
+    return { ok: true, ...result };
+  });
+
   ipcMain.handle('wugis:uuid-revealed-mark', () => {
     const state = deviceState.markUuidRevealed();
     return { ok: true, ...state };

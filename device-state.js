@@ -26,12 +26,36 @@ function writeStateFile(data) {
   fs.writeFileSync(statePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 2;
+
+function clampZoom(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 1;
+  return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(num * 10) / 10));
+}
+
 function getDeviceState() {
   const data = readStateFile();
   return {
     uuidRevealed: Boolean(data.uuidRevealed),
-    pendingPlantSetup: Boolean(data.pendingPlantSetup)
+    pendingPlantSetup: Boolean(data.pendingPlantSetup),
+    zoomFactor: clampZoom(data.zoomFactor == null ? 1 : data.zoomFactor)
   };
+}
+
+function getZoomFactor() {
+  return getDeviceState().zoomFactor;
+}
+
+function setZoomFactor(value) {
+  const data = readStateFile();
+  const zoomFactor = clampZoom(value);
+  writeStateFile({
+    ...data,
+    zoomFactor
+  });
+  return { zoomFactor };
 }
 
 function isUuidRevealed() {
@@ -65,6 +89,8 @@ function shouldShowUuidStep() {
 
 module.exports = {
   getDeviceState,
+  getZoomFactor,
+  setZoomFactor,
   isUuidRevealed,
   markUuidRevealed,
   setPendingPlantSetup,
