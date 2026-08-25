@@ -6,11 +6,16 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
-    "build": "electron-builder --win portable",
+    "build": "electron-builder --win nsis --x64 --publish never",
+    "publish": "electron-builder --win nsis --x64 --publish always",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Wugis",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/filippobiasiolo/wugisLocalApp.git"
+  },
   "build": {
     "appId": "com.wugis.localapp",
     "productName": "Wugis Local App",
@@ -20,17 +25,35 @@
     "files": [
       "**/*",
       "!dist/**",
-      "!node_modules/.cache/**"
+      "!node_modules/.cache/**",
+      "!CONTEXT.md",
+      "!docs/**"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "filippobiasiolo",
+      "repo": "wugisLocalApp",
+      "releaseType": "release"
+    },
     "win": {
       "target": [
         {
-          "target": "portable",
+          "target": "nsis",
           "arch": [
             "x64"
           ]
         }
-      ]
+      ],
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
   },
   "devDependencies": {
@@ -40,6 +63,7 @@
   },
   "dependencies": {
     "electron-tabs": "^1.0.4",
+    "electron-updater": "^6.8.9",
     "motion": "^12.40.0",
     "node-machine-id": "^1.1.12"
   }

@@ -3,6 +3,9 @@ const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const { machineIdSync } = require('node-machine-id');
 const configStore = require('./config-store');
 const deviceState = require('./device-state');
+const autoUpdate = require('./auto-update');
+
+let mainWindow = null;
 
 const APP_ICON_PATH = path.join(
   __dirname,
@@ -64,6 +67,12 @@ function registerIpcHandlers() {
   ipcMain.handle('wugis:should-show-uuid-step', () => ({
     show: deviceState.shouldShowUuidStep()
   }));
+
+  ipcMain.handle('wugis:update-pending', () => autoUpdate.getPendingRelease());
+
+  ipcMain.handle('wugis:update-install', () => {
+    autoUpdate.installNow();
+  });
 }
 
 function createWindow() {
@@ -75,6 +84,13 @@ function createWindow() {
       webviewTag: true,
       nodeIntegration: true,
       contextIsolation: false
+    }
+  });
+
+  mainWindow = win;
+  win.on('closed', () => {
+    if (mainWindow === win) {
+      mainWindow = null;
     }
   });
 
@@ -98,4 +114,5 @@ app.whenReady().then(() => {
   }
 
   createWindow();
+  autoUpdate.startSilentUpdate(() => mainWindow);
 });
